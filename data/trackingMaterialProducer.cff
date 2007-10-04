@@ -1,0 +1,14 @@
+# Geometry and Magnetic Field
+include "Geometry/CMSCommonData/data/cmsIdealGeometryXML.cfi"
+include "Geometry/TrackerGeometryBuilder/data/trackerGeometry.cfi"
+include "Geometry/TrackerNumberingBuilder/data/trackerNumberingGeometry.cfi"
+include "MagneticField/Engine/data/volumeBasedMagneticField.cfi"
+
+# random number generator for trackingMaterialProducer
+service = RandomNumberGeneratorService {
+    PSet moduleSeeds = {
+        untracked uint32 trackingMaterialProducer = 9876
+    }
+}
+
+include "SimTracker/TrackerMaterialAnalysis/data/trackingMaterialProducer.cfi"

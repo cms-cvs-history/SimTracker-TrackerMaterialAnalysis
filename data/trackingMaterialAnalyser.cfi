@@ -1,0 +1,5 @@
+# Analyze and plot the tracking material
+module trackingMaterialAnalyser = TrackingMaterialAnalyser {
+    InputTag MaterialAccounting = trackingMaterialProducer
+    bool     StopAtLastDetector = true
+}
