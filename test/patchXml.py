@@ -1,6 +1,7 @@
 #! /bin/env python2.4
 
 import os
+import sys
 from xml.dom.minidom import parse
 
 rads = []
@@ -15,6 +16,10 @@ for line in lines:
   dedx.append( float(tokens[9]) )
 
 # parse xml file
+if 'CMSSW_RELEASE_BASE' not in os.environ:
+  print 'please define the CMSSW environment with "eval `scramv1 runtime -sh`"'
+  sys.exit(1)
+
 dom = parse(os.environ['CMSSW_RELEASE_BASE'] + '/src/Geometry/TrackerRecoData/data/trackerRecoMaterial.xml')
 layers = dom.getElementsByTagName('SpecPar')
 
