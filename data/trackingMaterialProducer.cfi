@@ -1,5 +1,5 @@
 # Detector simulation (Geant4-based)
-module  trackingMaterialProducer = g4SimHits from "SimG4Core/Application/data/SimG4Object.cfi"
+module  trackingMaterialProducer = g4SimHits from "SimG4Core/Application/data/g4SimHits.cfi"
 replace trackingMaterialProducer.Generator.HepMCProductLabel = "source"
 replace trackingMaterialProducer.Physics.type = "SimG4Core/Physics/DummyPhysics"
 replace trackingMaterialProducer.Physics.DummyEMPhysics = true
