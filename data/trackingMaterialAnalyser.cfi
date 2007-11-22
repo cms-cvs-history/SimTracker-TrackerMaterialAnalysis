@@ -3,6 +3,5 @@ module trackingMaterialAnalyser = TrackingMaterialAnalyser {
     InputTag MaterialAccounting = trackingMaterialProducer
     bool     SkipBeforeFirstDetector     = false
     bool     SkipAfterLastDetector       = true
-    bool     ForceIdenticalForwardLayers = false
-    bool     ForceIdenticalBarrelLayers  = false
+    bool     ForceSymmetricForwardLayers = false
 }
