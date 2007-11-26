@@ -1,7 +1,7 @@
 # Analyze and plot the tracking material
 module trackingMaterialAnalyser = TrackingMaterialAnalyser {
     InputTag MaterialAccounting = trackingMaterialProducer
-    bool     SkipBeforeFirstDetector     = false
-    bool     SkipAfterLastDetector       = true
-    bool     ForceSymmetricForwardLayers = false
+    bool     SkipBeforeFirstDetector = false
+    bool     SkipAfterLastDetector   = true
+    bool     SymmetricForwardLayers  = false
 }
