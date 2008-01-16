@@ -1,3 +1,0 @@
-# trackingMaterial producer and analyser
-include "SimTracker/TrackerMaterialAnalysis/data/trackingMaterialProducer.cff"
-include "SimTracker/TrackerMaterialAnalysis/data/trackingMaterialAnalyser.cff"
