@@ -1,0 +1,19 @@
+# Generate mu+/mu- events
+
+source = FlatRandomPtGunSource
+{
+  untracked uint32 firstRun  = 1
+  untracked PSet   PGunParameters =
+  {
+     # you can request more than 1 particle
+     untracked vint32 PartID = { 13 }       # mu-
+     untracked double MinEta = -4.0
+     untracked double MaxEta =  4.0
+     untracked double MinPhi = -3.14159265358979323846
+     untracked double MaxPhi =  3.14159265358979323846
+     untracked double MinPt  =  9.99
+     untracked double MaxPt  = 10.01
+  }
+  untracked bool   AddAntiParticle = true
+  untracked int32  Verbosity = 0
+}
