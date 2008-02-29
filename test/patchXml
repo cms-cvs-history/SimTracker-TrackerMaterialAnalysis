@@ -1,0 +1,6 @@
+#! /bin/bash
+
+`dirname $0`/patchXml.py | sed \
+    -e 's/<SpecPar eval="true" name="\([[:alnum:]]*\)">/<SpecPar name="\1" eval="true">/' \
+    -e 's/<?xml version="1.0" ?><DDDefinition/<?xml version="1.0" ?>\n<DDDefinition/'
+
