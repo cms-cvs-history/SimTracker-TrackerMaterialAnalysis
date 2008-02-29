@@ -51,7 +51,7 @@ else:
 layers = dom.getElementsByTagName('SpecPar')
 
 for layer in layers:
-  sys.stderr.write( '%-36s\t-->  %s\n' % (layer.getAttribute('name'), name.pop(0)) )
+  sys.stderr.write( '%-36s\t<--  %s\n' % (layer.getAttribute('name'), name.pop(0)) )
   parameters = layer.getElementsByTagName('Parameter')
   for parameter in parameters:
     if parameter.getAttribute('name') == u'TrackerRadLength':
