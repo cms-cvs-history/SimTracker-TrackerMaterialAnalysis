@@ -1,12 +1,19 @@
 # Random number generators for (optional) modules up to trackingMaterialProducer
 service = RandomNumberGeneratorService 
 {
-    untracked uint32 sourceSeed = 442302
+  PSet theSource = {
+    untracked uint32 initialSeed = 442302
+    untracked string engineName = "HepJamesRandom"
+  }
 
-    PSet moduleSeeds = 
-    {
-        untracked uint32 VtxSmeared               = 863771
-        untracked uint32 trackingMaterialProducer = 288269
-    }
-     
+  PSet VtxSmeared = {
+    untracked uint32 initialSeed = 863771
+    untracked string engineName = "HepJamesRandom"
+  }
+
+  PSet trackingMateriarlProducer = {
+    untracked uint32 initialSeed = 288269
+    untracked string engineName = "HepJamesRandom"
+  }
+
 }
