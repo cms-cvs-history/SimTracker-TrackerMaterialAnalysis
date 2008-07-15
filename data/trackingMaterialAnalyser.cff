@@ -1,7 +1,6 @@
 # Geometry and Magnetic Field
-include "Geometry/CMSCommonData/data/cmsIdealGeometryXML.cfi"
-include "Geometry/TrackerGeometryBuilder/data/trackerGeometry.cfi"
-include "Geometry/TrackerNumberingBuilder/data/trackerNumberingGeometry.cfi"
+include "Configuration/StandardSequences/data/Geometry.cff"
+include "Configuration/StandardSequences/data/MagneticField_40T.cfg"
 include "RecoTracker/GeometryESProducer/data/TrackerRecoGeometryESProducer.cfi"
 
 include "SimTracker/TrackerMaterialAnalysis/data/trackingMaterialAnalyser.cfi"
