@@ -4,4 +4,7 @@ module trackingMaterialAnalyser = TrackingMaterialAnalyser {
     bool     SkipBeforeFirstDetector = false
     bool     SkipAfterLastDetector   = true
     bool     SymmetricForwardLayers  = false
+    bool     SaveSummaryPlot         = true
+    bool     SaveDetailedPlots       = false
+    bool     SaveParameters          = true
 }
