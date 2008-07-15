@@ -1,7 +1,7 @@
 # Analyze and plot the tracking material
 module trackingMaterialAnalyser = TrackingMaterialAnalyser {
     InputTag MaterialAccounting      = trackingMaterialProducer
-    string   SplitMode               = NearestLayer
+    string   SplitMode               = "NearestLayer"
     bool     SkipBeforeFirstDetector = false
     bool     SkipAfterLastDetector   = true
     bool     SymmetricForwardLayers  = false
