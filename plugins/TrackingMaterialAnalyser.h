@@ -44,7 +44,7 @@ private:
   bool                                      m_saveSummaryPlot;
   bool                                      m_saveDetailedPlots;
   bool                                      m_saveParameters;
-  std::vector<MaterialAccountingGroup *>    m_layers;
+  std::vector<MaterialAccountingGroup *>    m_groups;
   std::vector<std::string>                  m_groupNames;
   TrackingMaterialPlotter *                 m_plotter;
 };

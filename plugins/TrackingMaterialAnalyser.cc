@@ -65,8 +65,8 @@ void TrackingMaterialAnalyser::saveParameters(const char* name)
 {
   std::ofstream parameters(name);
   std::cout << std::endl;
-  for (unsigned int i = 0; i < m_layers.size(); ++i) {
-    MaterialAccountingGroup & layer = *(m_layers[i]);
+  for (unsigned int i = 0; i < m_groups.size(); ++i) {
+    MaterialAccountingGroup & layer = *(m_groups[i]);
     std::cout << layer.name() << std::endl;
     std::cout << boost::format("\tnumber of hits:               %9d") % layer.tracks() << std::endl;
     std::cout << boost::format("\tnormalized segment length:    %9.1f ± %9.1f cm")  % layer.averageLength()           % layer.sigmaLength()           << std::endl;
@@ -88,8 +88,8 @@ void TrackingMaterialAnalyser::saveParameters(const char* name)
 //-------------------------------------------------------------------------
 void TrackingMaterialAnalyser::saveLayerPlots()
 {
-  for (unsigned int i = 0; i < m_layers.size(); ++i) {
-    MaterialAccountingGroup & layer = *(m_layers[i]);
+  for (unsigned int i = 0; i < m_groups.size(); ++i) {
+    MaterialAccountingGroup & layer = *(m_groups[i]);
     layer.savePlots();
   }
 }
@@ -115,14 +115,14 @@ void TrackingMaterialAnalyser::beginJob(const edm::EventSetup & setup)
   edm::ESHandle<DDCompactView> hDDD;
   setup.get<IdealGeometryRecord>().get( hDDD );
 
-  m_layers.reserve( m_groupNames.size() );
+  m_groups.reserve( m_groupNames.size() );
   for (unsigned int i = 0; i < m_groupNames.size(); ++i)
-    m_layers.push_back( new MaterialAccountingGroup( m_groupNames[i], * hDDD) ); 
+    m_groups.push_back( new MaterialAccountingGroup( m_groupNames[i], * hDDD) ); 
 
   // INFO
   std::cout << "TrackingMaterialAnalyser: List of the tracker groups: " << std::endl;
-  for (unsigned int i = 0; i < m_layers.size(); ++i)
-    std::cout << '\t' << m_layers[i]->info() << std::endl;
+  for (unsigned int i = 0; i < m_groups.size(); ++i)
+    std::cout << '\t' << m_groups[i]->info() << std::endl;
   std::cout << std::endl;
 }
 
@@ -312,11 +312,11 @@ void TrackingMaterialAnalyser::split( MaterialAccountingTrack & track )
   // add the material from each detector to its layer (if there is one and only one)
   for (unsigned int i = 0; i < track.m_detectors.size(); ++i)
     if (group[i] != 0)
-      m_layers[group[i]-1]->addDetector( track.m_detectors[i] );
+      m_groups[group[i]-1]->addDetector( track.m_detectors[i] );
 
-  // end of track: commit internal buffers and reset the m_layers internal state for a new track
-  for (unsigned int i = 0; i < m_layers.size(); ++i)
-    m_layers[i]->endOfTrack();
+  // end of track: commit internal buffers and reset the m_groups internal state for a new track
+  for (unsigned int i = 0; i < m_groups.size(); ++i)
+    m_groups[i]->endOfTrack();
 }
 
 //-------------------------------------------------------------------------
@@ -325,8 +325,8 @@ int TrackingMaterialAnalyser::findLayer( const MaterialAccountingDetector & dete
 {
   int    index  = 0;
   size_t inside = 0;
-  for (size_t i = 0; i < m_layers.size(); ++i)
-    if (m_layers[i]->inside(detector)) {
+  for (size_t i = 0; i < m_groups.size(); ++i)
+    if (m_groups[i]->inside(detector)) {
       ++inside;
       index = i+1;
     }
