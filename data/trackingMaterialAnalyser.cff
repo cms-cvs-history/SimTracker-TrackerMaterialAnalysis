@@ -3,4 +3,5 @@ include "Configuration/StandardSequences/data/Geometry.cff"
 include "Configuration/StandardSequences/data/MagneticField.cff"
 include "RecoTracker/GeometryESProducer/data/TrackerRecoGeometryESProducer.cfi"
 
+include "SimTracker/TrackerMaterialAnalysis/data/trackingMaterialGroups.cff"
 include "SimTracker/TrackerMaterialAnalysis/data/trackingMaterialAnalyser.cfi"

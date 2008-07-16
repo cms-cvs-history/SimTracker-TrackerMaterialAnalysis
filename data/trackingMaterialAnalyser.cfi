@@ -1,10 +1,52 @@
 # Analyze and plot the tracking material
 module trackingMaterialAnalyser = TrackingMaterialAnalyser {
     InputTag MaterialAccounting      = trackingMaterialProducer
+    vstring  Groups                  = {
+        "TrackerRecMaterialPixelBarrelLayer0",
+        "TrackerRecMaterialPixelBarrelLayer1",
+        "TrackerRecMaterialPixelBarrelLayer2",
+        "TrackerRecMaterialTIBLayer0",
+        "TrackerRecMaterialTIBLayer1",
+        "TrackerRecMaterialTIBLayer2",
+        "TrackerRecMaterialTIBLayer3",
+        "TrackerRecMaterialTOBLayer0",
+        "TrackerRecMaterialTOBLayer1",
+        "TrackerRecMaterialTOBLayer2",
+        "TrackerRecMaterialTOBLayer3",
+        "TrackerRecMaterialTOBLayer4",
+        "TrackerRecMaterialTOBLayer5",
+        "TrackerRecMaterialPixelEndcapDisk1Fw",
+        "TrackerRecMaterialPixelEndcapDisk2Fw",
+        "TrackerRecMaterialPixelEndcapDisk1Bw",
+        "TrackerRecMaterialPixelEndcapDisk2Bw",
+        "TrackerRecMaterialTIDDisk1Fw",
+        "TrackerRecMaterialTIDDisk2Fw",
+        "TrackerRecMaterialTIDDisk3Fw",
+        "TrackerRecMaterialTIDDisk1Bw",
+        "TrackerRecMaterialTIDDisk2Bw",
+        "TrackerRecMaterialTIDDisk3Bw",
+        "TrackerRecMaterialTECDisk0Fw",
+        "TrackerRecMaterialTECDisk1Fw",
+        "TrackerRecMaterialTECDisk2Fw",
+        "TrackerRecMaterialTECDisk3Fw",
+        "TrackerRecMaterialTECDisk4Fw",
+        "TrackerRecMaterialTECDisk5Fw",
+        "TrackerRecMaterialTECDisk6Fw",
+        "TrackerRecMaterialTECDisk7Fw",
+        "TrackerRecMaterialTECDisk8Fw",
+        "TrackerRecMaterialTECDisk0Bw",
+        "TrackerRecMaterialTECDisk1Bw",
+        "TrackerRecMaterialTECDisk2Bw",
+        "TrackerRecMaterialTECDisk3Bw",
+        "TrackerRecMaterialTECDisk4Bw",
+        "TrackerRecMaterialTECDisk5Bw",
+        "TrackerRecMaterialTECDisk6Bw",
+        "TrackerRecMaterialTECDisk7Bw",
+        "TrackerRecMaterialTECDisk8Bw"
+    }
     string   SplitMode               = "NearestLayer"
     bool     SkipBeforeFirstDetector = false
     bool     SkipAfterLastDetector   = true
-    bool     SymmetricForwardLayers  = false
     bool     SaveSummaryPlot         = true
     bool     SaveDetailedPlots       = false
     bool     SaveParameters          = true

@@ -15,13 +15,14 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 
-#include "RecoTracker/Record/interface/TrackerRecoGeometryRecord.h"
-#include "RecoTracker/TkDetLayers/interface/GeometricSearchTracker.h"
-#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DetectorDescription/Core/interface/DDFilteredView.h"
+#include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "DetectorDescription/Core/interface/DDMaterial.h"
+#include "Geometry/Records/interface/IdealGeometryRecord.h"
 
 #include "SimDataFormats/ValidationFormats/interface/MaterialAccountingStep.h"
 #include "SimDataFormats/ValidationFormats/interface/MaterialAccountingTrack.h"
-#include "MaterialAccountingLayer.h"
+#include "MaterialAccountingGroup.h"
 #include "TrackingMaterialAnalyser.h"
 #include "TrackingMaterialPlotter.h"
 
@@ -29,6 +30,7 @@
 TrackingMaterialAnalyser::TrackingMaterialAnalyser(const edm::ParameterSet& iPSet)
 {
   m_material                = iPSet.getParameter<edm::InputTag>("MaterialAccounting");
+  m_groupNames              = iPSet.getParameter<std::vector<std::string> >("Groups");
   const std::string & splitmode = iPSet.getParameter<std::string>("SplitMode");
   if (strcasecmp(splitmode.c_str(), "NearestLayer") == 0) {
     m_splitMode = NEAREST_LAYER;
@@ -42,7 +44,6 @@ TrackingMaterialAnalyser::TrackingMaterialAnalyser(const edm::ParameterSet& iPSe
   }
   m_skipAfterLastDetector   = iPSet.getParameter<bool>("SkipAfterLastDetector");
   m_skipBeforeFirstDetector = iPSet.getParameter<bool>("SkipBeforeFirstDetector");
-  m_symmetricForwardLayers  = iPSet.getParameter<bool>("SymmetricForwardLayers");
   m_saveSummaryPlot         = iPSet.getParameter<bool>("SaveSummaryPlot");
   m_saveDetailedPlots       = iPSet.getParameter<bool>("SaveDetailedPlots");
   m_saveParameters          = iPSet.getParameter<bool>("SaveParameters");
@@ -65,7 +66,7 @@ void TrackingMaterialAnalyser::saveParameters(const char* name)
   std::ofstream parameters(name);
   std::cout << std::endl;
   for (unsigned int i = 0; i < m_layers.size(); ++i) {
-    MaterialAccountingLayer & layer = *(m_layers[i]);
+    MaterialAccountingGroup & layer = *(m_layers[i]);
     std::cout << layer.name() << std::endl;
     std::cout << boost::format("\tnumber of hits:               %9d") % layer.tracks() << std::endl;
     std::cout << boost::format("\tnormalized segment length:    %9.1f ± %9.1f cm")  % layer.averageLength()           % layer.sigmaLength()           << std::endl;
@@ -88,7 +89,7 @@ void TrackingMaterialAnalyser::saveParameters(const char* name)
 void TrackingMaterialAnalyser::saveLayerPlots()
 {
   for (unsigned int i = 0; i < m_layers.size(); ++i) {
-    MaterialAccountingLayer & layer = *(m_layers[i]);
+    MaterialAccountingGroup & layer = *(m_layers[i]);
     layer.savePlots();
   }
 }
@@ -107,63 +108,29 @@ void TrackingMaterialAnalyser::endJob(void)
     m_plotter->draw();
   }
 }
-//-------------------------------------------------------------------------
-void TrackingMaterialAnalyser::parseBarrelLayers( const std::vector<BarrelDetLayer*> & layers )
-{
-  unsigned int size = layers.size();
-  for (unsigned int i = 0; i < size; ++i) {
-    const DetLayer & layer = * layers[i];
-    std::stringstream s;
-    s << layer.subDetector() << "_layer_" << (i+1);
-    m_layers.push_back( new MaterialAccountingLayer( layer, s.str() ) );
-    std::cout << '\t' << m_layers.back()->name() << std::endl;
-  }
-}
 
 //-------------------------------------------------------------------------
-void TrackingMaterialAnalyser::parseForwardLayers( const std::vector<ForwardDetLayer*> & neg_layers, const std::vector<ForwardDetLayer*> & pos_layers )
+void TrackingMaterialAnalyser::beginJob(const edm::EventSetup & setup)
 {
-  if (neg_layers.size() != pos_layers.size())
-    throw std::invalid_argument("positive and negative forward layers do not match");
+  edm::ESHandle<DDCompactView> hDDD;
+  setup.get<IdealGeometryRecord>().get( hDDD );
 
-  unsigned int size = pos_layers.size();
-  for (unsigned int i = 0; i < size; ++i) {
-    const DetLayer & neg_layer = * neg_layers[i];
-    const DetLayer & pos_layer = * pos_layers[i];
-    std::stringstream s;
-    s << pos_layer.subDetector() << "_layer_" << (i+1);
-    std::vector <const DetLayer *> layers(2);
-    layers[0] = & neg_layer;
-    layers[1] = & pos_layer;
-    m_layers.push_back( new MaterialAccountingLayer( layers, s.str(), m_symmetricForwardLayers ) );
-    std::cout << '\t' << m_layers.back()->name() << "\tZ-\tZ+" <<std::endl;
-  }
-}
+  m_layers.reserve( m_groupNames.size() );
+  for (unsigned int i = 0; i < m_groupNames.size(); ++i)
+    m_layers.push_back( new MaterialAccountingGroup( m_groupNames[i], * hDDD) ); 
 
-//-------------------------------------------------------------------------
-void TrackingMaterialAnalyser::beginJob(const edm::EventSetup & iSetup)
-{
-  edm::ESHandle<GeometricSearchTracker> hTracker;
-  iSetup.get<TrackerRecoGeometryRecord>().get(hTracker);
-
-  std::vector<DetLayer*> layers = hTracker->allLayers();
-  m_layers.reserve( layers.size() );
   // INFO
-  std::cout << "TrackingMaterialAnalyser: List of the tracker layers: " << std::endl;
-  parseBarrelLayers( hTracker->pixelBarrelLayers() );
-  parseBarrelLayers( hTracker->tibLayers() );
-  parseBarrelLayers( hTracker->tobLayers() );
-  parseForwardLayers( hTracker->negPixelForwardLayers(), hTracker->posPixelForwardLayers() );
-  parseForwardLayers( hTracker->negTidLayers(), hTracker->posTidLayers() );
-  parseForwardLayers( hTracker->negTecLayers(), hTracker->posTecLayers() );
+  std::cout << "TrackingMaterialAnalyser: List of the tracker groups: " << std::endl;
+  for (unsigned int i = 0; i < m_layers.size(); ++i)
+    std::cout << '\t' << m_layers[i]->info() << std::endl;
   std::cout << std::endl;
 }
 
 //-------------------------------------------------------------------------
-void TrackingMaterialAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void TrackingMaterialAnalyser::analyze(const edm::Event& event, const edm::EventSetup& setup)
 {
   edm::Handle< std::vector<MaterialAccountingTrack> > h_tracks;
-  iEvent.getByLabel(m_material, h_tracks);
+  event.getByLabel(m_material, h_tracks);
 
   for (std::vector<MaterialAccountingTrack>::const_iterator t = h_tracks->begin(), end = h_tracks->end(); t != end; ++t) {
     MaterialAccountingTrack track(*t);
@@ -366,10 +333,20 @@ int TrackingMaterialAnalyser::findLayer( const MaterialAccountingDetector & dete
   if (inside == 0) {
     index = 0;
     std::cerr << "TrackingMaterialAnalyser::findLayer(...): ERROR: detector does not belong to any DetLayer" << std::endl;
+    std::cerr << "TrackingMaterialAnalyser::findLayer(...): detector position: " << std::fixed
+              << " (r: " << std::setprecision(1) << std::setw(5) << detector.position().perp()
+              << ", z: " << std::setprecision(1) << std::setw(6) << detector.position().z()
+              << ", phi: " << std::setprecision(3) << std::setw(6) << detector.position().phi() << ")" 
+              << std::endl;
   }
   if (inside > 1) {
     index = 0;
     std::cerr << "TrackingMaterialAnalyser::findLayer(...): ERROR: detector belongs to " << inside << "DetLayers" << std::endl;
+    std::cerr << "TrackingMaterialAnalyser::findLayer(...): detector position: " << std::fixed
+              << " (r: " << std::setprecision(1) << std::setw(5) << detector.position().perp()
+              << ", z: " << std::setprecision(1) << std::setw(6) << detector.position().z()
+              << ", phi: " << std::setprecision(3) << std::setw(6) << detector.position().phi() << ")" 
+              << std::endl;
   }
 
   return index;
