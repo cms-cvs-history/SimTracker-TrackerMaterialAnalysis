@@ -46,15 +46,6 @@ MaterialAccountingGroup::MaterialAccountingGroup( const std::string & name, cons
   }
   m_boundingbox.grow(s_tolerance);
 
-  // find the direction the elements are more spreaded along
-  if ((m_boundingbox.range_z().second - m_boundingbox.range_z().first) > (m_boundingbox.range_r().second - m_boundingbox.range_r().first))
-    m_sortingDirection = ALONG_Z;
-  else
-    m_sortingDirection = ALONG_R;
-
-  // TODO sort m_elements along m_sortingDirection
-  m_sortingDirection = UNSORTED;
-
   // initialize the histograms 
   m_dedx_spectrum   = new TH1F((m_name + "_dedx_spectrum").c_str(),     "Energy loss spectrum",       1000,    0,   1);
   m_radlen_spectrum = new TH1F((m_name + "_radlen_spectrum").c_str(),   "Radiation lengths spectrum", 1000,    0,   1);
@@ -86,6 +77,10 @@ MaterialAccountingGroup::~MaterialAccountingGroup(void)
   delete m_radlen_vs_r;
 }
 
+// TODO the inner check could be sped up in many ways
+// (sorting the m_elements, partitioning the bounding box, ...)
+// but is it worth? 
+// especially with the segmentation of the layers ?
 bool MaterialAccountingGroup::inside( const MaterialAccountingDetector& detector ) const
 {
   const GlobalPoint & position = detector.position();
@@ -94,7 +89,6 @@ bool MaterialAccountingGroup::inside( const MaterialAccountingDetector& detector
     return false;
   } else {
     // now check if the point is actually close enough to any element
-    // TODO speed up by taking advandage of sorted m_elements
     for (unsigned int i = 0; i < m_elements.size(); ++i)
       if ((position - m_elements[i]).mag2() < (s_tolerance * s_tolerance))
         return true;

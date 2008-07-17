@@ -70,9 +70,6 @@ private:
     double z_max;
   };
   
-  // speed up point lookup by sorting the elements along one direction
-  enum SortingDirection { UNSORTED, ALONG_X, ALONG_Y, ALONG_Z, ALONG_R, ALONG_PHI };
-  
 public:
   /// explicit constructors
   MaterialAccountingGroup( const std::string & name, const DDCompactView & geometry );
@@ -164,7 +161,6 @@ private:
   std::string                   m_name;
   std::vector<GlobalPoint>      m_elements;
   BoundingBox                   m_boundingbox;
-  SortingDirection              m_sortingDirection;
   MaterialAccountingStep        m_accounting;
   MaterialAccountingStep        m_errors;
   unsigned int                  m_tracks;
